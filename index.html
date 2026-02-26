@@ -1,443 +1,321 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { 
-  Wrench, 
-  Search, 
-  MapPin, 
-  Car, 
-  Phone, 
-  AlertTriangle, 
-  DollarSign, 
-  History,
-  Camera,
-  Cpu,
-  ShieldCheck,
-  ChevronRight,
-  Settings,
-  X,
-  Zap,
-  MessageSquare,
-  ArrowLeft,
-  Mic,
-  Video,
-  Upload,
-  Play,
-  Droplets,
-  Calendar,
-  Volume2,
-  Info
-} from 'lucide-react';
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CAR_Doc | مشخصاتي السيارات الذكي</title>
+    <!-- تضمين المكتبات اللازمة للتشغيل المباشر -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;700;900&display=swap" rel="stylesheet">
+    
+    <style>
+        body { 
+            font-family: 'Tajawal', sans-serif; 
+            background-color: #05070a; 
+            color: #f1f5f9; 
+            margin: 0;
+            overflow-x: hidden;
+        }
 
-const apiKey = ""; // البيئة البرمجية توفر المفتاح تلقائياً
-
-// --- Logo Component: CAR_Doc with 3D Maybach Rim "o" ---
-const Logo = () => {
-  return (
-    // Wrapped in dir="ltr" to ensure CAR_Doc order is correct regardless of page RTL
-    <div className="relative flex items-center gap-0 group cursor-default" dir="ltr">
-      {/* Animated Smoke/Steam Effect */}
-      <div className="absolute -left-10 top-0 w-full h-full pointer-events-none opacity-40">
-        <div className="smoke-particle p1"></div>
-        <div className="smoke-particle p2"></div>
-        <div className="smoke-particle p3"></div>
-      </div>
-
-      <div className="relative z-10 flex items-center text-4xl font-black italic tracking-tighter select-none">
-        {/* CAR_D Part */}
-        <span className="text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">CAR_D</span>
-        
-        {/* The 3D Mercedes-Maybach Rim "o" */}
-        <div className="relative w-11 h-11 mx-0.5 flex items-center justify-center">
-          <div className="absolute inset-0 bg-amber-500/10 rounded-full blur-lg animate-pulse"></div>
-          
-          <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-2xl overflow-visible animate-maybach-spin">
-            <defs>
-              <linearGradient id="rimGold" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" style={{stopColor:'#FFD700', stopOpacity:1}} />
-                <stop offset="50%" style={{stopColor:'#B8860B', stopOpacity:1}} />
-                <stop offset="100%" style={{stopColor:'#8B6508', stopOpacity:1}} />
-              </linearGradient>
-              <linearGradient id="rimBlack" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" style={{stopColor:'#333', stopOpacity:1}} />
-                <stop offset="100%" style={{stopColor:'#000', stopOpacity:1}} />
-              </linearGradient>
-            </defs>
-            <circle cx="50" cy="50" r="46" fill="#0a0a0a" stroke="#1a1a1a" strokeWidth="4" />
-            <circle cx="50" cy="50" r="38" fill="url(#rimBlack)" stroke="url(#rimGold)" strokeWidth="1.5" />
-            {[...Array(12)].map((_, i) => (
-              <line 
-                key={i}
-                x1="50" y1="50" 
-                x2={50 + 34 * Math.cos((i * 30 * Math.PI) / 180)} 
-                y2={50 + 34 * Math.sin((i * 30 * Math.PI) / 180)} 
-                stroke="url(#rimGold)" 
-                strokeWidth="1.5" 
-              />
-            ))}
-            <circle cx="50" cy="50" r="12" fill="url(#rimBlack)" stroke="url(#rimGold)" strokeWidth="1" />
-            {/* Mercedes Star Icon in Maybach Rim */}
-            <path d="M50 42 L52 49 L59 49 L53 53 L55 60 L50 56 L45 60 L47 53 L41 49 L48 49 Z" fill="url(#rimGold)" />
-          </svg>
-        </div>
-
-        {/* c Part */}
-        <span className="text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">c</span>
-      </div>
-
-      <style>{`
+        /* دوران جنط المايباخ الذهبي من اليسار لليمين (Clockwise) */
         @keyframes maybach-spin {
-          from { transform: rotate(0deg); }
-          to { transform: rotate(360deg); }
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
         }
         .animate-maybach-spin { animation: maybach-spin 8s linear infinite; }
+
+        /* تأثير الدخان خلف الشعار */
         .smoke-particle { position: absolute; background: rgba(255, 255, 255, 0.08); border-radius: 50%; filter: blur(18px); opacity: 0; }
-        @keyframes smoke-float { 0% { transform: translate(0, 0) scale(0.5); opacity: 0; } 50% { opacity: 0.15; } 100% { transform: translate(-60px, -30px) scale(2.5); opacity: 0; } }
+        @keyframes smoke-float { 
+            0% { transform: translate(0, 0) scale(0.5); opacity: 0; } 
+            50% { opacity: 0.2; } 
+            100% { transform: translate(-60px, -30px) scale(2.5); opacity: 0; } 
+        }
         .p1 { width: 60px; height: 60px; animation: smoke-float 4s infinite; }
-        .p2 { width: 40px; height: 40px; animation: smoke-float 5s infinite 1.5s; }
+        .p2 { width: 40px; height: 40px; animation: smoke-float 5s infinite 1s; }
         .p3 { width: 80px; height: 80px; animation: smoke-float 6s infinite 0.5s; }
-      `}</style>
-    </div>
-  );
-};
 
-// --- Custom Jeep Cherokee 2026 Loading Animation ---
-const CherokeeLoading = () => {
-  return (
-    <div className="flex flex-col items-center gap-8 w-full max-w-lg">
-      <div className="relative w-full h-48 overflow-hidden rounded-[40px] bg-[#0a0f18] border border-white/5 flex items-end justify-center">
-        
-        {/* Moving City Background */}
-        <div className="absolute inset-0 opacity-20 pointer-events-none">
-          <div className="city-animation flex">
-            <svg className="h-full w-auto min-w-full" viewBox="0 0 1000 200" preserveAspectRatio="none">
-              <path d="M0,200 L0,150 L30,150 L30,100 L70,100 L70,130 L100,130 L100,80 L150,80 L150,140 L200,140 L200,60 L260,60 L260,160 L310,160 L310,100 L360,100 L360,140 L410,140 L410,80 L480,80 L480,150 L540,150 L540,90 L600,90 L600,140 L660,140 L660,70 L730,70 L730,160 L800,160 L800,100 L870,100 L870,140 L930,140 L930,80 L1000,80 L1000,200 Z" fill="#334155" />
-            </svg>
-            <svg className="h-full w-auto min-w-full" viewBox="0 0 1000 200" preserveAspectRatio="none">
-              <path d="M0,200 L0,150 L30,150 L30,100 L70,100 L70,130 L100,130 L100,80 L150,80 L150,140 L200,140 L200,60 L260,60 L260,160 L310,160 L310,100 L360,100 L360,140 L410,140 L410,80 L480,80 L480,150 L540,150 L540,90 L600,90 L600,140 L660,140 L660,70 L730,70 L730,160 L800,160 L800,100 L870,100 L870,140 L930,140 L930,80 L1000,80 L1000,200 Z" fill="#334155" />
-            </svg>
-          </div>
-        </div>
-
-        {/* Moving Road */}
-        <div className="absolute bottom-0 w-full h-8 bg-slate-900 flex items-center">
-          <div className="road-lines flex w-[200%]">
-             {[...Array(20)].map((_, i) => (
-               <div key={i} className="h-1 w-12 bg-slate-700/50 mx-8 rounded-full"></div>
-             ))}
-          </div>
-        </div>
-
-        {/* The White Jeep Cherokee SUV */}
-        <div className="relative mb-6 jeep-bounce z-10">
-          <svg width="180" height="80" viewBox="0 0 200 80" className="drop-shadow-[0_10px_15px_rgba(0,0,0,0.5)]">
-            {/* Body */}
-            <path d="M20,60 L180,60 L180,45 L170,30 L120,25 L50,25 L35,30 L20,45 Z" fill="#ffffff" />
-            <path d="M50,25 L120,25 L115,35 L55,35 Z" fill="#1e293b" /> {/* Windows */}
-            <rect x="25" y="45" width="20" height="8" rx="2" fill="#e2e8f0" opacity="0.6" /> {/* Headlight */}
-            <rect x="170" y="45" width="10" height="8" rx="2" fill="#ef4444" /> {/* Brake light */}
-            
-            {/* Cherokee Grill / Details */}
-            <rect x="20" y="52" width="10" height="8" fill="#cbd5e1" opacity="0.8" />
-            
-            {/* Wheels */}
-            <g className="wheel-spin">
-              <circle cx="50" cy="65" r="10" fill="#111" stroke="#333" strokeWidth="2" />
-              <path d="M50 55 L50 75 M40 65 L60 65" stroke="#444" strokeWidth="1" />
-            </g>
-            <g className="wheel-spin">
-              <circle cx="150" cy="65" r="10" fill="#111" stroke="#333" strokeWidth="2" />
-              <path d="M150 55 L150 75 M140 65 L160 65" stroke="#444" strokeWidth="1" />
-            </g>
-          </svg>
-        </div>
-      </div>
-
-      <style>{`
+        /* أنيميشن مشهد التحميل (شيروكي 2026 في المدينة) */
         @keyframes city-move {
-          0% { transform: translateX(0); }
-          100% { transform: translateX(-100%); }
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-100%); }
         }
-        .city-animation {
-          animation: city-move 20s linear infinite;
-        }
-        @keyframes road-move {
-          0% { transform: translateX(0); }
-          100% { transform: translateX(-50%); }
-        }
-        .road-lines {
-          animation: road-move 0.8s linear infinite;
-        }
-        @keyframes jeep-vibrate {
-          0%, 100% { transform: translateY(0) rotate(0deg); }
-          25% { transform: translateY(-1px) rotate(0.2deg); }
-          75% { transform: translateY(1px) rotate(-0.2deg); }
-        }
-        .jeep-bounce {
-          animation: jeep-vibrate 0.15s infinite;
-        }
-        @keyframes wheel-rotate {
-          from { transform: rotate(0deg); }
-          to { transform: rotate(360deg); }
-        }
-        .wheel-spin g {
-          transform-origin: center;
-          animation: wheel-rotate 0.4s linear infinite;
-        }
-      `}</style>
-    </div>
-  );
-};
-
-export default function App() {
-  const [inputMode, setInputMode] = useState('text');
-  const [symptom, setSymptom] = useState('');
-  const [selectedMedia, setSelectedMedia] = useState(null);
-  const [isRecording, setIsRecording] = useState(false);
-  const [diagnosisResult, setDiagnosisResult] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [maintenancePlan, setMaintenancePlan] = useState(null);
-  const [carModel, setCarModel] = useState('');
-  const [mileage, setMileage] = useState('');
-
-  const callGemini = async (prompt, systemInstruction) => {
-    const maxRetries = 5;
-    let delay = 1000;
-    for (let i = 0; i < maxRetries; i++) {
-      try {
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            contents: [{ parts: [{ text: prompt }] }],
-            systemInstruction: { parts: [{ text: systemInstruction }] },
-            generationConfig: { responseMimeType: "application/json" }
-          })
-        });
-        if (!response.ok) throw new Error('API Error');
-        const data = await response.json();
-        return JSON.parse(data.candidates[0].content.parts[0].text);
-      } catch (err) {
-        if (i === maxRetries - 1) throw err;
-        await new Promise(r => setTimeout(r, delay));
-        delay *= 2;
-      }
-    }
-  };
-
-  const handleStartAnalysis = async () => {
-    if (!symptom.trim() && !selectedMedia) return;
-    setLoading(true);
-    setError(null);
-    try {
-      const systemPrompt = `انت خبير ميكانيكا سيارات محترف اسمك CAR_Doc. حلل العطل بالعامية المصرية بأسلوب فخم. رد بـ JSON فقط: { "title": "...", "analysis": "...", "severity": "high/medium/low", "estimated_price": "...", "parts_needed": ["..."], "diy_guide": "...", "emergency_tip": "..." }`;
-      const result = await callGemini(symptom || "حلل العطل المرفق", systemPrompt);
-      setDiagnosisResult(result);
-    } catch (err) { setError("حدث خطأ في الاتصال بالمحرك. حاول مرة أخرى."); } finally { setLoading(false); }
-  };
-
-  const handleGenerateMaintenance = async () => {
-    if (!carModel || !mileage) return;
-    setLoading(true);
-    try {
-      const systemPrompt = `انت مساعد صيانة سيارات. قدم خطة صيانة بالعامية المصرية. رد بـ JSON: { "plan_title": "...", "urgent_items": ["..."], "upcoming_items": ["..."], "estimated_cost": "..." }`;
-      const result = await callGemini(`سيارة ${carModel} ماشية ${mileage} كم.`, systemPrompt);
-      setMaintenancePlan(result);
-    } catch (err) { setError("فشل توليد الخطة."); } finally { setLoading(false); }
-  };
-
-  const handleSpeakDiagnosis = async () => {
-    if (!diagnosisResult) return;
-    try {
-      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key=${apiKey}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: [{ parts: [{ text: `المشكلة هي ${diagnosisResult.title}. والسبب هو ${diagnosisResult.analysis}.` }] }],
-          generationConfig: { 
-            responseModalities: ["AUDIO"],
-            speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: "Kore" } } }
-          }
-        })
-      });
-      const data = await response.json();
-      const audioUrl = `data:audio/l16;base64,${data.candidates[0].content.parts[0].inlineData.data}`;
-      new Audio(audioUrl).play().catch(() => {});
-    } catch (err) { console.error(err); }
-  };
-
-  const handleFileUpload = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => setSelectedMedia(reader.result);
-      reader.readAsDataURL(file);
-    }
-  };
-
-  return (
-    <div className="min-h-screen bg-[#05070a] text-slate-200 font-sans selection:bg-cyan-500/30 overflow-x-hidden" dir="rtl">
-      
-      <div className="fixed inset-0 pointer-events-none">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full bg-[radial-gradient(circle_at_50%_0%,rgba(6,182,212,0.12)_0%,rgba(0,0,0,0)_60%)]" />
-      </div>
-
-      <nav className="sticky top-0 z-[100] border-b border-white/5 bg-[#05070a]/90 backdrop-blur-md px-8 h-24 flex items-center justify-between">
-        <Logo />
-        <div className="flex gap-3">
-          <button className="p-3 bg-white/5 rounded-2xl border border-white/5 hover:bg-white/10 transition-all"><History className="w-5 h-5 text-slate-400" /></button>
-          <button className="p-3 bg-white/5 rounded-2xl border border-white/5 hover:bg-white/10 transition-all"><Settings className="w-5 h-5 text-slate-400" /></button>
-        </div>
-      </nav>
-
-      <main className="max-w-4xl mx-auto px-6 pt-12 pb-32">
+        .city-animation { animation: city-move 20s linear infinite; }
         
-        {!diagnosisResult && !maintenancePlan && !loading && (
-          <div className="text-center mb-12 animate-in fade-in duration-1000">
-            <h2 className="text-5xl md:text-7xl font-black text-white mb-6 leading-tight tracking-tight">
-              صيانة المستقبل <br/> 
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500 italic">بين يديك الآن</span>
-            </h2>
-            <p className="text-slate-500 text-sm opacity-60">CAR_Doc: الحل الذكي المتكامل لكل أعطال السيارات</p>
-          </div>
-        )}
+        @keyframes road-move {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+        .road-lines { animation: road-move 0.8s linear infinite; }
+        
+        @keyframes jeep-vibrate {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            25% { transform: translateY(-1px) rotate(0.2deg); }
+            75% { transform: translateY(1px) rotate(-0.2deg); }
+        }
+        .jeep-bounce { animation: jeep-vibrate 0.15s infinite; }
 
-        {!diagnosisResult && !maintenancePlan && !loading && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
-            <div className="p-8 bg-white/5 rounded-[40px] border border-white/10 hover:border-cyan-500/30 transition-all group cursor-pointer" onClick={() => setInputMode('text')}>
-               <Cpu className="w-10 h-10 text-cyan-400 mb-4 group-hover:scale-110 transition-transform" />
-               <h3 className="text-2xl font-black mb-2">تشخيص الأعطال</h3>
-               <button className="text-cyan-400 font-bold flex items-center gap-2">ابدأ الآن <ChevronRight className="w-4 h-4" /></button>
-            </div>
-            <div className="p-8 bg-white/5 rounded-[40px] border border-white/10 hover:border-blue-500/30 transition-all group cursor-pointer" onClick={() => setInputMode('maintenance')}>
-               <Calendar className="w-10 h-10 text-blue-400 mb-4 group-hover:scale-110 transition-transform" />
-               <h3 className="text-2xl font-black mb-2">خطة صيانة وقائية</h3>
-               <button className="text-blue-400 font-bold flex items-center gap-2">صمم خطتك <ChevronRight className="w-4 h-4" /></button>
-            </div>
-          </div>
-        )}
+        @keyframes wheel-rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        .wheel-spin { transform-origin: center; animation: wheel-rotate 0.4s linear infinite; }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
 
-        {inputMode !== 'maintenance' && !diagnosisResult && (
-          <div className={`transition-all duration-700 ${loading ? 'opacity-50 blur-sm pointer-events-none' : 'scale-100'}`}>
-            <div className="bg-[#0e121a] rounded-[50px] border border-white/10 shadow-2xl overflow-hidden relative">
-              <div className="flex border-b border-white/5 bg-black/40 p-3 gap-3">
-                {[
-                  { id: 'text', icon: MessageSquare, label: 'وصف نصي' },
-                  { id: 'image', icon: Camera, label: 'صور' },
-                  { id: 'audio', icon: Mic, label: 'بصمة الصوت' }
-                ].map(mode => (
-                  <button key={mode.id} onClick={() => { setInputMode(mode.id); setSelectedMedia(null); }} className={`flex-1 py-4 rounded-3xl flex items-center justify-center gap-3 transition-all font-black text-xs ${inputMode === mode.id ? 'bg-gradient-to-tr from-cyan-500 to-blue-600 text-white shadow-xl shadow-cyan-500/20' : 'text-slate-600 hover:text-slate-300 hover:bg-white/5'}`}>
-                    <mode.icon className="w-4 h-4" /> <span className="hidden md:inline">{mode.label}</span>
-                  </button>
-                ))}
-              </div>
+    <script type="text/babel">
+        const { useState, useEffect, useRef } = React;
 
-              <div className="p-10 md:p-16">
-                {inputMode === 'text' && (
-                  <textarea className="w-full bg-transparent border-none text-2xl text-white placeholder:text-slate-800 outline-none resize-none h-40 font-medium" placeholder="اوصف اللي حاسس بيه في العربية.." value={symptom} onChange={(e) => setSymptom(e.target.value)} />
-                )}
-                {inputMode === 'image' && (
-                  <div className="flex flex-col items-center justify-center py-12 border-2 border-dashed border-white/10 rounded-[40px] bg-black/40 group hover:border-cyan-500/30 transition-all">
-                    {selectedMedia ? (
-                      <div className="relative group/media">
-                        <img src={selectedMedia} alt="Preview" className="w-72 h-72 object-cover rounded-[35px] border-4 border-white/5" />
-                        <button onClick={() => setSelectedMedia(null)} className="absolute -top-4 -right-4 bg-red-500 p-3 rounded-full shadow-2xl"><X className="w-5 h-5 text-white" /></button>
-                      </div>
-                    ) : (
-                      <label className="cursor-pointer flex flex-col items-center p-12">
-                        <Camera className="w-14 h-14 text-cyan-400 mb-6" /> <p className="text-white text-2xl font-black">صور العطل</p>
-                        <input type="file" className="hidden" accept="image/*" onChange={handleFileUpload} />
-                      </label>
-                    )}
-                  </div>
-                )}
-                <button onClick={handleStartAnalysis} disabled={loading || (!symptom.trim() && !selectedMedia)} className="w-full mt-12 bg-gradient-to-r from-cyan-500 to-blue-600 text-white py-6 rounded-[30px] font-black text-2xl shadow-2xl hover:-translate-y-2 transition-all disabled:opacity-20 flex justify-center items-center gap-5">
-                   <span>ابدأ الفحص الذكي</span>
-                   <Zap className="w-7 h-7" />
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
+        // --- أيقونات ميكانيكية احترافية (SVG) ---
+        const IconZap = () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M13 2 L3 14 12 14 11 22 21 10 12 10 13 2 Z"/></svg>;
+        const IconCpu = () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 9h6v6H9z"/><path d="M15 2v2M15 20v2M2 15h2M2 9h2M20 15h2M20 9h2M9 2v2M9 20v2"/></svg>;
+        const IconWrench = () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>;
+        const IconMic = () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="8" y1="22" x2="16" y2="22"/></svg>;
+        const IconCamera = () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>;
 
-        {inputMode === 'maintenance' && !maintenancePlan && (
-          <div className="bg-[#0e121a] rounded-[50px] border border-white/10 p-12 md:p-16 shadow-2xl">
-             <div className="flex items-center gap-3 mb-8"> <Calendar className="text-blue-400 w-8 h-8" /> <h3 className="text-3xl font-black">صمم خطة صيانتك</h3> </div>
-             <div className="space-y-6">
-                <div> <label className="block text-slate-500 text-sm font-bold mb-2">موديل وسنة السيارة</label> <input type="text" placeholder="مثلاً: هيونداي إلنترا 2020" className="w-full bg-white/5 border border-white/10 rounded-2xl p-4 text-xl outline-none" value={carModel} onChange={(e) => setCarModel(e.target.value)} /> </div>
-                <div> <label className="block text-slate-500 text-sm font-bold mb-2">الممشى الحالي (كم)</label> <input type="number" placeholder="مثلاً: 85000" className="w-full bg-white/5 border border-white/10 rounded-2xl p-4 text-xl outline-none" value={mileage} onChange={(e) => setMileage(e.target.value)} /> </div>
-                <button onClick={handleGenerateMaintenance} disabled={loading || !carModel || !mileage} className="w-full bg-gradient-to-r from-blue-500 to-indigo-600 text-white py-6 rounded-3xl font-black text-xl shadow-xl hover:-translate-y-1 transition-all">
-                  <span>توليد الخطة</span>
-                </button>
-                <button onClick={() => { setInputMode('text'); setDiagnosisResult(null); }} className="w-full text-slate-600 font-bold">إلغاء</button>
-             </div>
-          </div>
-        )}
-
-        {maintenancePlan && (
-          <div className="mt-16 space-y-10 animate-in fade-in slide-in-from-bottom-20 duration-1000">
-            <button onClick={() => setMaintenancePlan(null)} className="flex items-center gap-3 text-slate-500 hover:text-white transition-all font-bold"> <ArrowLeft className="w-5 h-5" /> <span>العودة</span> </button>
-            <div className="bg-[#111827] rounded-[55px] border border-blue-500/20 p-12 shadow-2xl">
-               <h2 className="text-4xl font-black text-white mb-4">{maintenancePlan.plan_title}</h2>
-               <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-10">
-                  <div className="bg-red-500/5 border border-red-500/10 p-8 rounded-[40px]"> <h4 className="text-red-400 font-black mb-4 flex items-center gap-2">⚠️ صيانة عاجلة</h4> <ul className="space-y-3"> {maintenancePlan.urgent_items.map((item, i) => ( <li key={i} className="text-slate-300 flex items-start gap-2">• {item}</li> ))} </ul> </div>
-                  <div className="bg-cyan-500/5 border border-cyan-500/10 p-8 rounded-[40px]"> <h4 className="text-cyan-400 font-black mb-4 flex items-center gap-2">📅 صيانة دورية</h4> <ul className="space-y-3"> {maintenancePlan.upcoming_items.map((item, i) => ( <li key={i} className="text-slate-300 flex items-start gap-2">• {item}</li> ))} </ul> </div>
-               </div>
-               <div className="mt-8 p-6 bg-white/5 rounded-3xl text-center"> <span className="text-slate-500 block text-xs font-bold mb-1 italic">التكلفة الإجمالية التقديرية</span> <span className="text-3xl font-black text-white">{maintenancePlan.estimated_cost}</span> </div>
-            </div>
-          </div>
-        )}
-
-        {diagnosisResult && (
-          <div className="mt-16 space-y-10 animate-in fade-in slide-in-from-bottom-20 duration-1000">
-            <div className="flex items-center justify-between px-6">
-              <button onClick={() => { setDiagnosisResult(null); setSymptom(''); }} className="flex items-center gap-3 text-slate-500 hover:text-white transition-all font-bold"> <ArrowLeft className="w-6 h-6" /> <span>تشخيص جديد</span> </button>
-              <button onClick={handleSpeakDiagnosis} className="flex items-center gap-3 bg-cyan-500/10 px-6 py-3 rounded-full border border-cyan-500/20 text-cyan-400 font-bold transition-all hover:bg-cyan-500/20"> <Volume2 className="w-5 h-5" /> اسمع التشخيص </button>
-            </div>
-            <div className={`p-1 rounded-[55px] bg-gradient-to-br ${diagnosisResult.severity === 'high' ? 'from-red-500/60 to-orange-500/60 shadow-red-500/15' : 'from-cyan-500/60 to-blue-600/60 shadow-cyan-500/15'}`}>
-              <div className="bg-[#0e121a] rounded-[54px] p-12 md:p-16 relative overflow-hidden">
-                <div className="flex flex-col md:flex-row gap-12 items-start relative z-10">
-                  <div className={`p-10 rounded-[45px] ${diagnosisResult.severity === 'high' ? 'bg-red-500/10 text-red-500' : 'bg-cyan-500/10 text-cyan-400'}`}> <AlertTriangle className="w-20 h-20" /> </div>
-                  <div className="flex-1">
-                    <h2 className="text-5xl font-black text-white mb-8 leading-tight">{diagnosisResult.title}</h2>
-                    <p className="text-slate-400 text-2xl font-medium leading-relaxed mb-12">{diagnosisResult.analysis}</p>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                      <div className="bg-white/5 p-10 rounded-[40px] border border-white/5"> <div className="text-slate-500 font-black text-xs uppercase mb-4"> <DollarSign className="w-5 h-5 text-cyan-500 inline" /> ميزانية الإصلاح </div> <div className="text-4xl font-black text-white">{diagnosisResult.estimated_price}</div> </div>
-                      <div className="bg-white/5 p-10 rounded-[40px] border border-white/5"> <div className="text-slate-500 font-black text-xs uppercase mb-4"> <ShieldCheck className="w-5 h-5 text-red-500 inline" /> تعليمات فورية </div> <div className="text-xl font-black text-red-400 italic">"{diagnosisResult.emergency_tip}"</div> </div>
-                    </div>
-                  </div>
+        const Logo = () => (
+            <div className="relative flex items-center gap-0 group cursor-default" dir="ltr">
+                <div className="absolute -left-10 top-0 w-full h-full pointer-events-none opacity-40">
+                    <div className="smoke-particle p1"></div>
+                    <div className="smoke-particle p2"></div>
+                    <div className="smoke-particle p3"></div>
                 </div>
-              </div>
+                <div className="relative z-10 flex items-center text-4xl font-black italic tracking-tighter select-none">
+                    <span className="text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">CAR_D</span>
+                    <div className="relative w-11 h-11 mx-1 flex items-center justify-center">
+                        <div className="absolute inset-0 bg-amber-500/10 rounded-full blur-lg animate-pulse"></div>
+                        <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-2xl overflow-visible animate-maybach-spin">
+                            <defs>
+                                <linearGradient id="rimGold" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" style={{stopColor:'#FFD700'}} />
+                                    <stop offset="50%" style={{stopColor:'#B8860B'}} />
+                                    <stop offset="100%" style={{stopColor:'#8B6508'}} />
+                                </linearGradient>
+                            </defs>
+                            <circle cx="50" cy="50" r="46" fill="#0a0a0a" stroke="#1a1a1a" strokeWidth="4" />
+                            <circle cx="50" cy="50" r="38" fill="#111" stroke="url(#rimGold)" strokeWidth="1.5" />
+                            {[...Array(12)].map((_, i) => (
+                                <line key={i} x1="50" y1="50" x2={50 + 34 * Math.cos((i * 30 * Math.PI) / 180)} y2={50 + 34 * Math.sin((i * 30 * Math.PI) / 180)} stroke="url(#rimGold)" strokeWidth="1.5" />
+                            ))}
+                            <circle cx="50" cy="50" r="12" fill="#111" stroke="url(#rimGold)" strokeWidth="1" />
+                            <path d="M50 42 L52 49 L59 49 L53 53 L55 60 L50 56 L45 60 L47 53 L41 49 L48 49 Z" fill="url(#rimGold)" />
+                        </svg>
+                    </div>
+                    <span className="text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">c</span>
+                </div>
             </div>
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-10 px-4">
-               <div className="lg:col-span-2 bg-[#111827] p-12 rounded-[55px] border border-white/10">
-                  <h4 className="font-black text-3xl text-white mb-10 flex items-center gap-4"><Wrench className="w-8 h-8 text-cyan-500" /> القطع والحل </h4>
-                  <div className="flex flex-wrap gap-4 mb-10"> {diagnosisResult.parts_needed.map((p, i) => ( <div key={i} className="px-8 py-4 bg-black/40 border border-white/10 rounded-2xl text-lg font-bold text-slate-200">{p}</div> ))} </div>
-                  <div className="p-10 bg-cyan-500/5 rounded-[35px] border border-cyan-500/20"> <p className="text-cyan-400 font-black mb-4 text-xl">تأكد بنفسك:</p> <p className="text-slate-300 text-xl leading-relaxed italic">{diagnosisResult.diy_guide}</p> </div>
-               </div>
-               <div className="bg-gradient-to-br from-blue-700 to-indigo-900 p-12 rounded-[55px] flex flex-col justify-between group overflow-hidden relative">
-                  <div className="relative z-10 text-white"> <h4 className="font-black text-4xl mb-6 italic">الورش المعتمدة</h4> <p className="text-blue-100/80 text-xl mb-12 font-medium">بحثنا لك عن أفضل فنيين لضمان جودة التصليح.</p> </div>
-                  <button className="relative z-10 w-full bg-white text-blue-900 py-7 rounded-[30px] font-black text-xl hover:scale-105 transition-all flex items-center justify-center gap-4"> <MapPin className="w-8 h-8" /> خريطة الورش </button>
-               </div>
-            </div>
-          </div>
-        )}
-      </main>
+        );
 
-      {/* Modern SUV Cinematic Loading Overlay */}
-      {loading && (
-        <div className="fixed inset-0 z-[200] bg-[#05070a]/90 backdrop-blur-xl flex items-center justify-center p-6">
-          <div className="flex flex-col items-center gap-12 w-full max-w-2xl">
-            <CherokeeLoading />
-            <div className="flex flex-col items-center gap-2">
-              <p className="text-3xl font-black text-white tracking-tight animate-pulse">CAR_Doc يحلل البيانات الآن...</p>
-              <div className="flex items-center gap-2 text-cyan-500 font-bold uppercase text-xs tracking-[0.3em]">
-                <Cpu className="w-4 h-4" />
-                <span>AI Processing engine</span>
-              </div>
+        const CherokeeLoading = () => (
+            <div className="flex flex-col items-center gap-12 w-full max-w-2xl">
+                <div className="relative w-full h-56 overflow-hidden rounded-[40px] bg-[#020617] border border-white/5 flex items-end justify-center">
+                    <div className="absolute inset-0 opacity-20 pointer-events-none city-animation flex w-[200%]">
+                        <svg className="h-full w-1/2" viewBox="0 0 1000 200" preserveAspectRatio="none">
+                            <path d="M0,200 L0,150 L30,150 L30,100 L70,100 L150,80 L300,60 L500,100 L700,80 L1000,120 L1000,200 Z" fill="#334155" />
+                        </svg>
+                        <svg className="h-full w-1/2" viewBox="0 0 1000 200" preserveAspectRatio="none">
+                            <path d="M0,200 L0,150 L30,150 L30,100 L70,100 L150,80 L300,60 L500,100 L700,80 L1000,120 L1000,200 Z" fill="#334155" />
+                        </svg>
+                    </div>
+                    <div className="absolute bottom-0 w-full h-10 bg-[#0f172a] flex items-center overflow-hidden">
+                        <div className="road-lines flex w-[200%]">
+                            {[...Array(20)].map((_, i) => <div key={i} className="h-1 w-12 bg-slate-700/50 mx-8 rounded-full"></div>)}
+                        </div>
+                    </div>
+                    <div className="relative mb-8 jeep-bounce z-10">
+                        <svg width="200" height="85" viewBox="0 0 200 85">
+                            <path d="M20,60 L180,60 L175,40 L160,30 L110,25 L50,25 L30,35 L20,45 Z" fill="#ffffff" />
+                            <path d="M55,28 L110,28 L105,35 L58,35 Z" fill="#0f172a" />
+                            <rect x="25" y="45" width="15" height="5" rx="1" fill="#e2e8f0" opacity="0.8" />
+                            <circle cx="50" cy="62" r="12" fill="#000" />
+                            <circle cx="50" cy="62" r="7" fill="#222" className="wheel-spin" />
+                            <circle cx="150" cy="62" r="12" fill="#000" />
+                            <circle cx="150" cy="62" r="7" fill="#222" className="wheel-spin" />
+                        </svg>
+                    </div>
+                </div>
+                <div className="text-center">
+                    <p className="text-3xl font-black text-white mb-2 tracking-tight">CAR_Doc يحلل البيانات الآن...</p>
+                    <div className="flex items-center justify-center gap-2 text-cyan-500 font-bold uppercase text-xs tracking-[0.3em]">
+                        <IconCpu /> <span>نظام الفحص العصبي نشط</span>
+                    </div>
+                </div>
             </div>
-          </div>
-        </div>
-      )}
-    </div>
-  );
-}
+        );
+
+        function App() {
+            const [inputMode, setInputMode] = useState('text');
+            const [symptom, setSymptom] = useState('');
+            const [loading, setLoading] = useState(false);
+            const [diagnosis, setDiagnosis] = useState(null);
+            const [maintenancePlan, setMaintenancePlan] = useState(null);
+            const [carModel, setCarModel] = useState('');
+            const [mileage, setMileage] = useState('');
+            const apiKey = ""; // يُعالج تلقائياً
+
+            const handleAnalyze = () => {
+                if(!symptom) return;
+                setLoading(true);
+                setTimeout(() => {
+                    setDiagnosis({
+                        title: "عطل في نظام حقن الوقود (البخاخات)",
+                        analysis: "وصفك يشير إلى وجود انسداد جزئي في أحد البخاخات، مما يسبب ارتجاف المحرك واستهلاكاً غير طبيعي للبنزين.",
+                        price: "1,500 - 2,800 ج.م",
+                        tip: "حاول استخدام منظف دورة وقود أصلي مع تفويلة بنزين 95 قبل اللجوء للميكانيكي."
+                    });
+                    setLoading(false);
+                }, 5000);
+            };
+
+            const handleMaintenance = () => {
+                if(!carModel || !mileage) return;
+                setLoading(true);
+                setTimeout(() => {
+                    setMaintenancePlan({
+                        title: `خطة صيانة لـ ${carModel}`,
+                        urgent: ["تغيير زيت المحرك والسيفون", "فحص تيل الفرامل الأمامي"],
+                        upcoming: ["تنظيف دورة التبريد", "فحص سيور المحرك"],
+                        cost: "2,000 - 4,500 ج.م"
+                    });
+                    setLoading(false);
+                }, 4000);
+            };
+
+            return (
+                <div className="min-h-screen">
+                    <nav className="h-24 bg-[#05070a]/90 backdrop-blur-xl border-b border-white/5 px-8 flex items-center justify-between sticky top-0 z-50">
+                        <Logo />
+                        <div className="flex gap-4">
+                            <button className="p-3 bg-white/5 rounded-2xl border border-white/5 hover:bg-white/10 transition-all text-slate-400">الإعدادات</button>
+                        </div>
+                    </nav>
+
+                    <main className="max-w-4xl mx-auto px-6 pt-16 pb-32">
+                        {!diagnosis && !maintenancePlan && !loading && (
+                            <>
+                                <div className="text-center mb-16 animate-in fade-in duration-1000">
+                                    <h2 className="text-6xl md:text-8xl font-black text-white mb-6 tracking-tighter leading-tight">
+                                        صيانة المستقبل <br/> 
+                                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500 italic">بين يديك الآن</span>
+                                    </h2>
+                                    <p className="text-slate-400 text-xl font-light italic">CAR_Doc: مشخصاتي ومساعد ذكي مدعوم بالذكاء الاصطناعي</p>
+                                </div>
+
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
+                                    <div onClick={() => setInputMode('text')} className="p-10 bg-[#0e121a] rounded-[40px] border border-white/10 hover:border-cyan-500/30 transition-all cursor-pointer group">
+                                        <IconCpu />
+                                        <h3 className="text-2xl font-black mt-4 text-white">تشخيص الأعطال</h3>
+                                        <p className="text-slate-500 mt-2">حلل عطل سيارتك بالنص أو الصور.</p>
+                                    </div>
+                                    <div onClick={() => setInputMode('maintenance')} className="p-10 bg-[#0e121a] rounded-[40px] border border-white/10 hover:border-blue-500/30 transition-all cursor-pointer group">
+                                        <IconWrench />
+                                        <h3 className="text-2xl font-black mt-4 text-white">خطة الصيانة</h3>
+                                        <p className="text-slate-500 mt-2">صمم خطة صيانة وقائية لسيارتك.</p>
+                                    </div>
+                                </div>
+                            </>
+                        )}
+
+                        {inputMode !== 'maintenance' && !diagnosis && !loading && (
+                            <div className="bg-[#0e121a] rounded-[50px] border border-white/10 p-10 md:p-16 shadow-2xl relative overflow-hidden">
+                                <div className="flex gap-4 mb-8">
+                                    <button className="flex-1 py-4 bg-cyan-600 text-white rounded-2xl font-black text-xs uppercase tracking-widest">وصف نصي</button>
+                                    <button className="flex-1 py-4 bg-white/5 text-slate-500 rounded-2xl font-black text-xs uppercase tracking-widest border border-white/5">فحص بالصور</button>
+                                </div>
+                                <textarea 
+                                    className="w-full bg-transparent border-none text-2xl text-white placeholder:text-slate-800 outline-none resize-none h-40 font-medium leading-relaxed"
+                                    placeholder="اوصف اللي حاسس بيه في العربية.. مثال: 'صوت تزييق مع الفرامل'"
+                                    value={symptom}
+                                    onChange={(e) => setSymptom(e.target.value)}
+                                />
+                                <button onClick={handleAnalyze} className="w-full mt-10 bg-gradient-to-r from-cyan-500 to-blue-600 text-white py-6 rounded-[30px] font-black text-2xl shadow-xl hover:-translate-y-2 transition-all flex justify-center items-center gap-4">
+                                    <span>ابدأ الفحص الذكي</span>
+                                    <IconZap />
+                                </button>
+                            </div>
+                        )}
+
+                        {inputMode === 'maintenance' && !maintenancePlan && !loading && (
+                            <div className="bg-[#0e121a] rounded-[50px] border border-white/10 p-12 md:p-16 shadow-2xl">
+                                <h3 className="text-3xl font-black text-white mb-8">صمم خطة صيانتك</h3>
+                                <div className="space-y-6">
+                                    <input type="text" placeholder="موديل السيارة (مثل: تويوتا كورولا 2022)" className="w-full bg-white/5 border border-white/10 rounded-2xl p-5 text-xl outline-none" value={carModel} onChange={(e) => setCarModel(e.target.value)} />
+                                    <input type="number" placeholder="الممشى الحالي (كم)" className="w-full bg-white/5 border border-white/10 rounded-2xl p-5 text-xl outline-none" value={mileage} onChange={(e) => setMileage(e.target.value)} />
+                                    <button onClick={handleMaintenance} className="w-full bg-blue-600 text-white py-6 rounded-[30px] font-black text-2xl shadow-xl hover:-translate-y-2 transition-all">توليد الخطة</button>
+                                    <button onClick={() => setInputMode('text')} className="w-full text-slate-600 font-bold">إلغاء</button>
+                                </div>
+                            </div>
+                        )}
+
+                        {loading && (
+                            <div className="fixed inset-0 z-[100] bg-[#05070a]/95 flex items-center justify-center p-6">
+                                <CherokeeLoading />
+                            </div>
+                        )}
+
+                        {diagnosis && (
+                            <div className="animate-in fade-in slide-in-from-bottom-10 duration-700">
+                                <div className="bg-[#0e121a] rounded-[50px] border border-cyan-500/20 p-12 md:p-16 shadow-2xl relative overflow-hidden">
+                                    <h2 className="text-4xl font-black text-white mb-8 border-r-4 border-cyan-500 pr-4">نتيجة التشخيص</h2>
+                                    <div className="space-y-8">
+                                        <div className="bg-white/5 p-8 rounded-3xl border border-white/5">
+                                            <h3 className="text-cyan-400 text-2xl font-black mb-4">{diagnosis.title}</h3>
+                                            <p className="text-slate-300 text-xl leading-relaxed">{diagnosis.analysis}</p>
+                                        </div>
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                            <div className="bg-white/5 p-8 rounded-3xl">
+                                                <span className="text-slate-500 text-xs block mb-2 font-bold uppercase tracking-widest">التكلفة التقديرية (مصر)</span>
+                                                <span className="text-3xl font-black text-white">{diagnosis.price}</span>
+                                            </div>
+                                            <div className="bg-red-500/10 p-8 rounded-3xl border border-red-500/20">
+                                                <span className="text-red-500 text-xs block mb-2 font-bold uppercase tracking-widest">نصيحة CAR_Doc</span>
+                                                <p className="text-red-100 text-lg font-bold italic leading-snug">"{diagnosis.tip}"</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <button onClick={() => setDiagnosis(null)} className="mt-12 text-slate-500 font-bold hover:text-white transition-all underline underline-offset-8">تشخيص جديد</button>
+                                </div>
+                            </div>
+                        )}
+
+                        {maintenancePlan && (
+                            <div className="animate-in fade-in slide-in-from-bottom-10 duration-700">
+                                <div className="bg-[#111827] rounded-[50px] border border-blue-500/20 p-12 md:p-16 shadow-2xl">
+                                    <h2 className="text-4xl font-black text-white mb-8">{maintenancePlan.title}</h2>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                        <div className="bg-red-500/5 p-8 rounded-3xl border border-red-500/10">
+                                            <h4 className="text-red-400 font-black mb-4 uppercase text-xs tracking-widest">صيانة عاجلة الآن</h4>
+                                            <ul className="space-y-3 text-slate-300">
+                                                {maintenancePlan.urgent.map((item, i) => <li key={i}>• {item}</li>)}
+                                            </ul>
+                                        </div>
+                                        <div className="bg-cyan-500/5 p-8 rounded-3xl border border-cyan-500/10">
+                                            <h4 className="text-cyan-400 font-black mb-4 uppercase text-xs tracking-widest">صيانة قادمة</h4>
+                                            <ul className="space-y-3 text-slate-300">
+                                                {maintenancePlan.upcoming.map((item, i) => <li key={i}>• {item}</li>)}
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <div className="mt-8 p-6 bg-white/5 rounded-2xl text-center">
+                                        <span className="text-slate-500 block text-xs mb-1 italic tracking-widest font-bold">التكلفة التقديرية الإجمالية</span>
+                                        <span className="text-3xl font-black text-white">{maintenancePlan.cost}</span>
+                                    </div>
+                                    <button onClick={() => setMaintenancePlan(null)} className="mt-12 text-slate-500 font-bold hover:text-white transition-all underline underline-offset-8">العودة للرئيسية</button>
+                                </div>
+                            </div>
+                        )}
+                    </main>
+                </div>
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
